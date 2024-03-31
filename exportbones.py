@@ -1,7 +1,7 @@
 bl_info = {
-    "name": "Export Armature Animation",
+    "name": "Armature Anim Converter",
     "author": "YuSa64",
-    "version": (1, 0),
+    "version": (1, 1),
     "blender": (2, 80, 0),
     "location": "View3D > Sidebar > YuSa64",
     "description": "Import and export FBX files with armature animation.",
@@ -12,7 +12,7 @@ import bpy
 import os
 
 class YuSa64Panel(bpy.types.Panel):
-    bl_label = "Export Amrature Animation"
+    bl_label = "Armature Anim Converter"
     bl_idname = "PT_YuSa64Panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -54,10 +54,11 @@ class YuSa64ImportExportOperator(bpy.types.Operator):
                             bpy.ops.export_scene.fbx(filepath=os.path.join(converted_dir, file), use_selection=True)
                             bpy.ops.object.mode_set(mode='OBJECT')
                     bpy.ops.object.delete()
+                    # Clear animation data
+                    for action in bpy.data.actions:
+                        bpy.data.actions.remove(action)
                     bpy.ops.outliner.orphans_purge()  # clean up unused data
         return {'FINISHED'}
-
-
 
 
     def invoke(self, context, event):
