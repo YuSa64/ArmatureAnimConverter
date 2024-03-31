@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Armature Anim Converter",
     "author": "YuSa64",
-    "version": (1, 1),
+    "version": (1, 2),
     "blender": (2, 80, 0),
     "location": "View3D > Sidebar > YuSa64",
     "description": "Import and export FBX files with armature animation.",
@@ -43,15 +43,11 @@ class YuSa64ImportExportOperator(bpy.types.Operator):
                         if obj.type == 'ARMATURE':
                             bpy.ops.object.mode_set(mode='POSE')
                             bpy.ops.pose.select_all(action='SELECT')
-                            # Unlink the meshes
-                            for child in obj.children:
-                                if child.type == 'MESH':
-                                    bpy.context.collection.objects.unlink(child)
                             # Create the same subfolder structure in the "converted" directory
                             relative_dir = os.path.relpath(root, base_dir)
                             converted_dir = os.path.join(converted_base_dir, relative_dir)
                             os.makedirs(converted_dir, exist_ok=True)
-                            bpy.ops.export_scene.fbx(filepath=os.path.join(converted_dir, file), use_selection=True)
+                            bpy.ops.export_scene.fbx(filepath=os.path.join(converted_dir, file), use_selection=True, object_types={'ARMATURE'})
                             bpy.ops.object.mode_set(mode='OBJECT')
                     bpy.ops.object.delete()
                     # Clear animation data
@@ -59,7 +55,6 @@ class YuSa64ImportExportOperator(bpy.types.Operator):
                         bpy.data.actions.remove(action)
                     bpy.ops.outliner.orphans_purge()  # clean up unused data
         return {'FINISHED'}
-
 
     def invoke(self, context, event):
         context.window_manager.fileselect_add(self)
